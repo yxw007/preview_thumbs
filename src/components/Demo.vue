@@ -4,7 +4,7 @@
       <span v-for="n in 6" :key="n" @click="changePreview(n - 1)"
         >{{ n - 1 }}张预览图</span
       >
-      <span></span>
+      <span @click="allPreview"> all </span>
     </div>
     <div class="wrapper">
       <div class="list">
@@ -17,7 +17,7 @@
               :key="index"
               :style="{
                 border:
-                  choice_index === index
+                  choice_index === index 
                     ? '1px solid #007dff'
                     : '1px solid #e5e5e5',
               }"
@@ -50,7 +50,40 @@ export default {
       previews: [],
       choice_index: 0,
       bsScroll: undefined,
+      itemW:92,
+      wrapperW:380,
     };
+  },
+  watch:{
+    choice_index(nv,pv){
+      if(!this.bsScroll){
+        return;
+      }
+      console.log("--------------------------");
+      console.log("nv="+nv+",pv="+pv);
+      if(nv>pv){//往右选择，向左移动
+        console.log("scroll.x=" + this.bsScroll.x);
+        
+        let indexX = this.bsScroll.x + (nv + 1) * this.itemW;
+        console.log("indexX="+indexX);
+
+        console.log("wraperW="+this.wrapperW);
+
+        let offsetX = (this.wrapperW - indexX); 
+        console.log("offsetX="+offsetX);
+
+        if(offsetX < 0){
+          this.bsScroll.scrollTo(this.bsScroll.x + offsetX,0,300);
+        }
+      }else{//向右移动
+        let indexX = this.bsScroll.x + (nv) * this.itemW;
+        console.log("indexX="+indexX);
+
+        if(indexX<0){
+          this.bsScroll.scrollTo(this.bsScroll.x - indexX,0,300);
+        }
+      }
+    }
   },
   mounted() {
     this.bsScroll = new BScroll(".bs-wrapper", {
@@ -86,6 +119,26 @@ export default {
           ? 0
           : this.choice_index + 1;
     },
+    allPreview(){
+      this.previews = [
+        "https://q.kuxaunxuan.cn/image/20210913/6fd0fde98338e64d74c4ae93c1c9bc2a.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+        "https://q.kuxaunxuan.cn/image/20210916/aaaed8561e1a275e165694c4f6c40183.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+        "https://q.kuxaunxuan.cn/image/20210916/172455b9f6c7195c6e407ec6a2d251d9.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+        "https://q.kuxaunxuan.cn/image/20210916/20b53059f1c35052c204f1560a523e54.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+        "https://q.kuxaunxuan.cn/image/20210916/789b94192df5f7a1a966fc322cc870be.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0", 
+        
+        "https://q.kuxaunxuan.cn/image/20210913/6fd0fde98338e64d74c4ae93c1c9bc2a.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+        "https://q.kuxaunxuan.cn/image/20210916/aaaed8561e1a275e165694c4f6c40183.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+        "https://q.kuxaunxuan.cn/image/20210916/aaaed8561e1a275e165694c4f6c40183.png?x-oss-process=image/resize,m_mfit,h_80,w_80,limit_0",
+      ];
+
+      this.choice_index = 0;
+      if (this.bsScroll) {
+        setTimeout(() => {
+          this.bsScroll.refresh();
+        }, 40);
+      }
+    }
   },
 };
 </script>
@@ -114,6 +167,7 @@ export default {
       span {
         width: 40px;
         border: 1px solid #0000ff;
+        user-select:none;
       }
 
       .bs-wrapper {
